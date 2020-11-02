@@ -25,21 +25,32 @@ namespace CommandsReminder.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Command>>> GetCommands()
         {
-            return await _context.Commands.ToListAsync();
+            var commands = await _context.Commands
+                .Include(c => c.Platforms)
+                .Include(c => c.Parameters)
+                .ToListAsync();
+            if(commands != null)
+            {
+                return Ok(commands);
+            }
+            return NotFound();
         }
 
         // GET: api/Commands/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Command>> GetCommand(int id)
         {
-            var command = await _context.Commands.FindAsync(id);
+            var command = await _context.Commands
+                .Include(c => c.Platforms)
+                .Include(c => c.Parameters)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (command == null)
+            if (command != null)
             {
-                return NotFound();
+                return Ok(command);
             }
 
-            return command;
+            return NotFound();
         }
 
         // PUT: api/Commands/5

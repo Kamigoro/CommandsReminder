@@ -25,21 +25,34 @@ namespace CommandsReminder.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Platform>>> GetPlatforms()
         {
-            return await _context.Platforms.ToListAsync();
+            var platforms = await _context.Platforms
+                .Include(p => p.Commands)
+                .ThenInclude(c => c.Parameters)
+                .ToListAsync();
+
+            if(platforms != null)
+            {
+                return Ok(platforms);
+            }
+
+            return NotFound();
         }
 
         // GET: api/Platforms/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Platform>> GetPlatform(int id)
         {
-            var platform = await _context.Platforms.FindAsync(id);
+            var platform = await _context.Platforms
+                .Include(p => p.Commands)
+                .ThenInclude(c => c.Parameters)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (platform == null)
+            if (platform != null)
             {
-                return NotFound();
+                return Ok(platform);
             }
 
-            return platform;
+            return NotFound();
         }
 
         // PUT: api/Platforms/5
