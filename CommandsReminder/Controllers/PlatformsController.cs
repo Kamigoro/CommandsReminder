@@ -8,6 +8,7 @@ using CommandsReminder.DTO;
 using CommandsReminder.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -31,9 +32,30 @@ namespace CommandsReminder.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PlatformDTO>>> GetAsync()
         {
+            var platforms = await _context.Platforms.ToListAsync();
 
+            if(platforms != null)
+            {
+                var commandPlatforms = await _context.CommandPlatforms
+                    .Include(cp => cp.Command)
+                    .ThenInclude(c => c.Parameters)
+                    .ToListAsync();
+                foreach (var platform in platforms)
+                {
+                    foreach(var commandPlatform in commandPlatforms)
+                    {
+                        if (commandPlatform.PlatformId == platform.PlatformId)
+                            platform.Commands.Add(commandPlatform.Command);
+                    }
+                }
 
-            return null;
+                IEnumerable<PlatformDTO> platformDTOs = _mapper.Map<IEnumerable<PlatformDTO>>(platforms);
+                return Ok(platformDTOs);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // GET api/<PlatformsController>/5
