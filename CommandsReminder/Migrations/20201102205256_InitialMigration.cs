@@ -10,73 +10,73 @@ namespace CommandsReminder.Migrations
                 name: "Commands",
                 columns: table => new
                 {
-                    CommandId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 30, nullable: false),
-                    Description = table.Column<string>(maxLength: 250, nullable: false),
-                    Example = table.Column<string>(maxLength: 250, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    Example = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Commands", x => x.CommandId);
+                    table.PrimaryKey("PK_Commands", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Platforms",
                 columns: table => new
                 {
-                    PlatformId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Platforms", x => x.PlatformId);
+                    table.PrimaryKey("PK_Platforms", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "CommandParameters",
                 columns: table => new
                 {
-                    ParameterId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    String = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
-                    Example = table.Column<string>(nullable: true),
-                    CommandId = table.Column<int>(nullable: true)
+                    String = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Example = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CommandId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CommandParameters", x => x.ParameterId);
+                    table.PrimaryKey("PK_CommandParameters", x => x.Id);
                     table.ForeignKey(
                         name: "FK_CommandParameters_Commands_CommandId",
                         column: x => x.CommandId,
                         principalTable: "Commands",
-                        principalColumn: "CommandId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CommandPlatforms",
+                name: "CommandPlatform",
                 columns: table => new
                 {
-                    CommandId = table.Column<int>(nullable: false),
-                    PlatformId = table.Column<int>(nullable: false)
+                    CommandsId = table.Column<int>(type: "int", nullable: false),
+                    PlatformsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CommandPlatforms", x => new { x.CommandId, x.PlatformId });
+                    table.PrimaryKey("PK_CommandPlatform", x => new { x.CommandsId, x.PlatformsId });
                     table.ForeignKey(
-                        name: "FK_CommandPlatforms_Commands_CommandId",
-                        column: x => x.CommandId,
+                        name: "FK_CommandPlatform_Commands_CommandsId",
+                        column: x => x.CommandsId,
                         principalTable: "Commands",
-                        principalColumn: "CommandId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CommandPlatforms_Platforms_PlatformId",
-                        column: x => x.PlatformId,
+                        name: "FK_CommandPlatform_Platforms_PlatformsId",
+                        column: x => x.PlatformsId,
                         principalTable: "Platforms",
-                        principalColumn: "PlatformId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -86,9 +86,9 @@ namespace CommandsReminder.Migrations
                 column: "CommandId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CommandPlatforms_PlatformId",
-                table: "CommandPlatforms",
-                column: "PlatformId");
+                name: "IX_CommandPlatform_PlatformsId",
+                table: "CommandPlatform",
+                column: "PlatformsId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -97,7 +97,7 @@ namespace CommandsReminder.Migrations
                 name: "CommandParameters");
 
             migrationBuilder.DropTable(
-                name: "CommandPlatforms");
+                name: "CommandPlatform");
 
             migrationBuilder.DropTable(
                 name: "Commands");

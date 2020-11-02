@@ -13,7 +13,7 @@ namespace CommandsReminder.Models
     {
         [Key]
         [JsonIgnore]
-        public int CommandId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [MaxLength(30)]
@@ -26,12 +26,7 @@ namespace CommandsReminder.Models
         [MaxLength(250)]
         public string Example { get; set; }
 
-        [JsonIgnore]
-        public List<CommandPlatform> CommandPlatforms { get; set; }
-
-        [JsonIgnore]
-        [NotMapped]
-        public List<Platform> Platforms { get; set; } = new List<Platform>();
+        public ICollection<Platform> Platforms { get; set; }
 
         public List<Parameter> Parameters { get; set; }
     }

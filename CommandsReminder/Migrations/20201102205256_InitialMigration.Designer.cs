@@ -10,64 +10,64 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CommandsReminder.Migrations
 {
     [DbContext(typeof(CommandsDbContext))]
-    [Migration("20201102131805_InitialMigration")]
+    [Migration("20201102205256_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.9")
+                .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "5.0.0-rc.2.20475.6");
+
+            modelBuilder.Entity("CommandPlatform", b =>
+                {
+                    b.Property<int>("CommandsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PlatformsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CommandsId", "PlatformsId");
+
+                    b.HasIndex("PlatformsId");
+
+                    b.ToTable("CommandPlatform");
+                });
 
             modelBuilder.Entity("CommandsReminder.Models.Command", b =>
                 {
-                    b.Property<int>("CommandId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(250)")
-                        .HasMaxLength(250);
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Example")
-                        .HasColumnType("nvarchar(250)")
-                        .HasMaxLength(250);
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(30)")
-                        .HasMaxLength(30);
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
-                    b.HasKey("CommandId");
+                    b.HasKey("Id");
 
                     b.ToTable("Commands");
                 });
 
-            modelBuilder.Entity("CommandsReminder.Models.CommandPlatform", b =>
-                {
-                    b.Property<int>("CommandId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PlatformId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CommandId", "PlatformId");
-
-                    b.HasIndex("PlatformId");
-
-                    b.ToTable("CommandPlatforms");
-                });
-
             modelBuilder.Entity("CommandsReminder.Models.Parameter", b =>
                 {
-                    b.Property<int>("ParameterId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<int?>("CommandId")
                         .HasColumnType("int");
@@ -81,7 +81,7 @@ namespace CommandsReminder.Migrations
                     b.Property<string>("String")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ParameterId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CommandId");
 
@@ -90,31 +90,31 @@ namespace CommandsReminder.Migrations
 
             modelBuilder.Entity("CommandsReminder.Models.Platform", b =>
                 {
-                    b.Property<int>("PlatformId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("PlatformId");
+                    b.HasKey("Id");
 
                     b.ToTable("Platforms");
                 });
 
-            modelBuilder.Entity("CommandsReminder.Models.CommandPlatform", b =>
+            modelBuilder.Entity("CommandPlatform", b =>
                 {
-                    b.HasOne("CommandsReminder.Models.Command", "Command")
-                        .WithMany("CommandPlatforms")
-                        .HasForeignKey("CommandId")
+                    b.HasOne("CommandsReminder.Models.Command", null)
+                        .WithMany()
+                        .HasForeignKey("CommandsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CommandsReminder.Models.Platform", "Platform")
-                        .WithMany("CommandPlatforms")
-                        .HasForeignKey("PlatformId")
+                    b.HasOne("CommandsReminder.Models.Platform", null)
+                        .WithMany()
+                        .HasForeignKey("PlatformsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -124,6 +124,11 @@ namespace CommandsReminder.Migrations
                     b.HasOne("CommandsReminder.Models.Command", null)
                         .WithMany("Parameters")
                         .HasForeignKey("CommandId");
+                });
+
+            modelBuilder.Entity("CommandsReminder.Models.Command", b =>
+                {
+                    b.Navigation("Parameters");
                 });
 #pragma warning restore 612, 618
         }

@@ -12,7 +12,7 @@ namespace CommandsReminder.Models
     {
         [Key]
         [JsonIgnore]
-        public int ParameterId { get; set; }
+        public int Id { get; set; }
 
         public string String { get; set; }
         public string Description { get; set; }
