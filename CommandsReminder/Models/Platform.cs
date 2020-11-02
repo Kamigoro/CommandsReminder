@@ -23,6 +23,6 @@ namespace CommandsReminder.Models
 
         [JsonIgnore]
         [NotMapped]
-        public List<Command> Commands { get; set; }
+        public List<Command> Commands { get; set; } = new List<Command>();
     }
 }
