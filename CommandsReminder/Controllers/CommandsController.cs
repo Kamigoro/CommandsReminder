@@ -41,7 +41,7 @@ namespace CommandsReminder.Controllers
         }
 
         // GET: api/Commands/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name="GetCommand")]
         public async Task<ActionResult<CommandReadDTO>> GetCommand(int id)
         {
             var command = await _context.Commands
@@ -93,17 +93,30 @@ namespace CommandsReminder.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Command>> PostCommand(Command command)
+        public async Task<ActionResult<CommandReadDTO>> PostCommand(CommandCreateDTO commandCreateDTO)
         {
-            _context.Commands.Add(command);
-            await _context.SaveChangesAsync();
+            var command = _mapper.Map<Command>(commandCreateDTO);
+            await _context.Commands.AddAsync(command);
+            var platforms = _context.Platforms.Where(p => commandCreateDTO.PlatformsId.Contains(p.Id));
+            if(platforms != null)
+            {
+                await platforms.ForEachAsync(p => p.Commands.Add(command));
+            }
+                
+            int result = await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCommand", new { id = command.Id }, command);
+            if(result > 0)
+            {
+                var createdCommand = await _context.Commands.FirstOrDefaultAsync(c => c.Equals(command));
+                return CreatedAtRoute(nameof(GetCommand), new { Id = createdCommand.Id}, _mapper.Map<CommandReadDTO>(createdCommand));
+            }
+
+            return BadRequest();
         }
 
         // DELETE: api/Commands/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Command>> DeleteCommand(int id)
+        public async Task<ActionResult> DeleteCommand(int id)
         {
             var command = await _context.Commands.FindAsync(id);
             if (command == null)
@@ -114,7 +127,7 @@ namespace CommandsReminder.Controllers
             _context.Commands.Remove(command);
             await _context.SaveChangesAsync();
 
-            return command;
+            return NoContent();
         }
 
         private bool CommandExists(int id)
