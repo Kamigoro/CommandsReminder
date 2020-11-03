@@ -13,6 +13,7 @@ namespace CommandsReminder.Profiles
         public PlatformProfile()
         {
             CreateMap<Platform, PlatformReadDTO>();
+            CreateMap<PlatformCreateDTO, Platform>();
         }
     }
 }

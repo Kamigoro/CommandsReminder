@@ -13,6 +13,7 @@ namespace CommandsReminder.Profiles
         public CommandProfile()
         {
             CreateMap<Command, CommandReadDTO>();
+            CreateMap<CommandCreateDTO, Command>();
         }
     }
 }
