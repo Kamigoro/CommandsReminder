@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CommandsReminder.Database;
 using CommandsReminder.Models;
+using AutoMapper;
+using CommandsReminder.DTO;
 
 namespace CommandsReminder.Controllers
 {
@@ -15,15 +17,17 @@ namespace CommandsReminder.Controllers
     public class CommandsController : ControllerBase
     {
         private readonly CommandsDbContext _context;
+        private readonly IMapper _mapper;
 
-        public CommandsController(CommandsDbContext context)
+        public CommandsController(CommandsDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Commands
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Command>>> GetCommands()
+        public async Task<ActionResult<IEnumerable<CommandReadDTO>>> GetCommands()
         {
             var commands = await _context.Commands
                 .Include(c => c.Platforms)
@@ -31,14 +35,14 @@ namespace CommandsReminder.Controllers
                 .ToListAsync();
             if(commands != null)
             {
-                return Ok(commands);
+                return Ok(_mapper.Map<IEnumerable<CommandReadDTO>>(commands));
             }
             return NotFound();
         }
 
         // GET: api/Commands/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Command>> GetCommand(int id)
+        public async Task<ActionResult<CommandReadDTO>> GetCommand(int id)
         {
             var command = await _context.Commands
                 .Include(c => c.Platforms)
@@ -47,7 +51,7 @@ namespace CommandsReminder.Controllers
 
             if (command != null)
             {
-                return Ok(command);
+                return Ok(_mapper.Map<CommandReadDTO>(command));
             }
 
             return NotFound();

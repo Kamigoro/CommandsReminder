@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CommandsReminder.Database;
 using CommandsReminder.Models;
+using CommandsReminder.DTO;
+using AutoMapper;
 
 namespace CommandsReminder.Controllers
 {
@@ -15,15 +17,17 @@ namespace CommandsReminder.Controllers
     public class PlatformsController : ControllerBase
     {
         private readonly CommandsDbContext _context;
+        private readonly IMapper _mapper;
 
-        public PlatformsController(CommandsDbContext context)
+        public PlatformsController(CommandsDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Platforms
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Platform>>> GetPlatforms()
+        public async Task<ActionResult<IEnumerable<PlatformReadDTO>>> GetPlatforms()
         {
             var platforms = await _context.Platforms
                 .Include(p => p.Commands)
@@ -32,7 +36,7 @@ namespace CommandsReminder.Controllers
 
             if(platforms != null)
             {
-                return Ok(platforms);
+                return Ok(_mapper.Map<IEnumerable<PlatformReadDTO>>(platforms));
             }
 
             return NotFound();
@@ -40,7 +44,7 @@ namespace CommandsReminder.Controllers
 
         // GET: api/Platforms/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Platform>> GetPlatform(int id)
+        public async Task<ActionResult<PlatformReadDTO>> GetPlatform(int id)
         {
             var platform = await _context.Platforms
                 .Include(p => p.Commands)
@@ -49,7 +53,7 @@ namespace CommandsReminder.Controllers
 
             if (platform != null)
             {
-                return Ok(platform);
+                return Ok(_mapper.Map<PlatformReadDTO>(platform));
             }
 
             return NotFound();
