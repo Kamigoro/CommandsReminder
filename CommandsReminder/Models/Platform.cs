@@ -18,6 +18,6 @@ namespace CommandsReminder.Models
         public string Name { get; set; }
 
         [JsonIgnore]
-        public ICollection<Command> Commands { get; set; }
+        public ICollection<Command> Commands { get; set; } = new List<Command>();
     }
 }

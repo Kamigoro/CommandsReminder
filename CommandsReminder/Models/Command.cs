@@ -26,7 +26,7 @@ namespace CommandsReminder.Models
         public string Example { get; set; }
 
         [JsonIgnore]
-        public ICollection<Platform> Platforms { get; set; }
+        public ICollection<Platform> Platforms { get; set; } = new List<Platform>();
 
         [JsonIgnore]
         public List<Parameter> Parameters { get; set; }
