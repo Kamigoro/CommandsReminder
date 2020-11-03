@@ -12,12 +12,12 @@ namespace CommandsReminder.Models
     public class Platform
     {
         [Key]
-        [JsonIgnore]
         public int Id { get; set; }
 
         [MaxLength(50)]
         public string Name { get; set; }
 
+        [JsonIgnore]
         public ICollection<Command> Commands { get; set; }
     }
 }
