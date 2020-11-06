@@ -91,17 +91,33 @@ namespace CommandsReminder.Controllers
 
         // POST: api/Platforms
         [HttpPost]
-        public async Task<ActionResult<Platform>> PostPlatform(Platform platform)
+        public async Task<ActionResult<PlatformReadDTO>> PostPlatform(PlatformCreateDTO platformCreateDTO)
         {
+            //Checking if all the specified commands exists
+            var platform = _mapper.Map<Platform>(platformCreateDTO);
+            foreach (var commandId in platformCreateDTO.CommandsId)
+            {
+                var command = await _context.Commands.FirstOrDefaultAsync(c => c.Id == commandId);
+                if (command == null)
+                {
+                    return NotFound($"The command to add to the platform with the id '{commandId}' was not found");
+                }
+                else
+                {
+                    platform.Commands.Add(command);
+                }                    
+            }       
+
             _context.Platforms.Add(platform);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPlatform", new { id = platform.Id }, platform);
+            var platformReadDTO = _mapper.Map<PlatformReadDTO>(platform);
+            return CreatedAtAction("GetPlatform", new { id = platform.Id }, platformReadDTO);
         }
 
         // DELETE: api/Platforms/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Platform>> DeletePlatform(int id)
+        public async Task<ActionResult> DeletePlatform(int id)
         {
             var platform = await _context.Platforms.FindAsync(id);
             if (platform == null)
@@ -112,7 +128,7 @@ namespace CommandsReminder.Controllers
             _context.Platforms.Remove(platform);
             await _context.SaveChangesAsync();
 
-            return platform;
+            return NoContent();
         }
 
         private bool PlatformExists(int id)
