@@ -18,6 +18,8 @@ namespace CommandsReminder
 {
     public class Startup
     {
+        private readonly string myDefaultPolicy = "myDefaultPolicy";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -34,6 +36,10 @@ namespace CommandsReminder
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: myDefaultPolicy, builder => { builder.AllowAnyOrigin(); });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +49,8 @@ namespace CommandsReminder
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(myDefaultPolicy);
 
             app.UseHttpsRedirection();
 
